@@ -7,6 +7,22 @@ import string
 import pickle
 
 
+def load_secrets():
+    if filepath.stat().st_size > 0:
+        with open('files/data.txt', 'rb') as src:
+            secret_db = pickle.load(src)
+    else:
+        secret_db = {}
+    return secret_db
+
+
+def generate_unique_key(secret_db):
+    while True:
+        secret_key = ''.join(secrets.choice(alphabet) for i in range(20))
+        if secret_key not in secret_db.keys():
+            return secret_key
+
+
 class Secret(BaseModel):
     text: str
     code_phrase: str
@@ -15,24 +31,28 @@ class Secret(BaseModel):
 class Code(BaseModel):
     code_phrase: str
 
-secret_db = {}
-
 alphabet = string.ascii_letters + string.digits
+
+Path('files').mkdir(parents=True, exist_ok=True)
+filepath = Path('files') / Path('data.txt')
+filepath.touch(exist_ok=True)
 
 app = FastAPI()
 
 
 @app.post('/generate/')
 def generate_secret(secret: Secret):
-    # secret_key = ''.join(secrets.choice(alphabet) for i in range(20))
+
+    secret_db = load_secrets()
+
+    # secret_key = generate_unique_key(secret_db)
     secret_key = 'aaa'
+
     secret_db[secret_key] = {
         'text': secret.text,
         'code_phrase': secret.code_phrase
     }
 
-    Path('files').mkdir(parents=True, exist_ok=True)
-    Path('files/data.txt').touch(exist_ok=True)
     with open('files/data.txt', 'wb') as src:
         pickle.dump(secret_db, src, protocol=3)
     return {'secret_key': secret_key}
@@ -41,19 +61,12 @@ def generate_secret(secret: Secret):
 @app.post('/secrets/{secret_key}/')
 def get_secret(secret_key: str, code: Code):
 
-    Path('files').mkdir(parents=True, exist_ok=True)
-    Path('files/data.txt').touch(exist_ok=True)
+    secret_db = load_secrets()
 
-    with open('files/data.txt', 'rb') as src:
-        secret_db = pickle.load(src)
     if secret_key not in secret_db.keys():
         raise HTTPException(status_code=404, detail='key not found')
     if code.code_phrase == secret_db[secret_key]['code_phrase']:
         secret = secret_db.pop(secret_key)
-
-        Path('files').mkdir(parents=True, exist_ok=True)
-        Path('files/data.txt').touch(exist_ok=True)
-
         with open('files/data.txt', 'wb') as src:
             pickle.dump(secret_db, src, protocol=3)
         return {'secret': secret['text']}
