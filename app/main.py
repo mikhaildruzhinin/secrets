@@ -45,8 +45,7 @@ def generate_secret(secret: Secret):
 
     secret_db = load_secrets()
 
-    # secret_key = generate_unique_key(secret_db)
-    secret_key = 'aaa'
+    secret_key = generate_unique_key(secret_db)
 
     secret_db[secret_key] = {
         'text': secret.text,
