@@ -8,6 +8,7 @@ import pickle
 
 
 def load_secrets():
+    '''Load the file with secrets or create an empty dict if there is nothing to load'''
     if filepath.stat().st_size > 0:
         with open('files/data.txt', 'rb') as src:
             secret_db = pickle.load(src)
@@ -17,6 +18,7 @@ def load_secrets():
 
 
 def generate_unique_key(secret_db):
+    '''Generate a unique secret key'''
     while True:
         secret_key = ''.join(secrets.choice(alphabet) for i in range(20))
         if secret_key not in secret_db.keys():
@@ -42,7 +44,7 @@ app = FastAPI()
 
 @app.post('/generate/')
 def generate_secret(secret: Secret):
-
+    '''Generate a new secret'''
     secret_db = load_secrets()
 
     secret_key = generate_unique_key(secret_db)
@@ -59,7 +61,7 @@ def generate_secret(secret: Secret):
 
 @app.post('/secrets/{secret_key}/')
 def get_secret(secret_key: str, code: Code):
-
+    '''Read a secret'''
     secret_db = load_secrets()
 
     if secret_key not in secret_db.keys():
