@@ -1,6 +1,6 @@
 # secrets
 
-This is a HTTP service for creating one-time secrets similar to [this one](https://onetimesecret.com/). It allow you to create secrets, set code phrases for them and generates secret keys that lets you read the secret once. I used [FastAPI](https://fastapi.tiangolo.com/) framework to build the app.
+This is a HTTP service for creating one-time secrets similar to [this one](https://onetimesecret.com/). It allow you to create secrets, set code phrases for them and generates secret keys that lets you read the secret once. I used [FastAPI](https://fastapi.tiangolo.com/) framework to build the app and [pytest](https://docs.pytest.org/) for the tests.
 
 ### How to install
 
