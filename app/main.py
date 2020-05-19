@@ -72,8 +72,3 @@ def get_secret(secret_key: str, code: Code):
             pickle.dump(secret_db, src, protocol=3)
         return {'secret': secret['text']}
     raise HTTPException(status_code=404, detail='invalid code')
-
-
-@app.get('/')
-def get_root():
-    return {'hello': 'world'}
